@@ -1,0 +1,24 @@
+{
+  "name": "moviez",
+  "version": "1.0.0",
+  "description": "Movie application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager ./ Moviez --all --out ~/Desktop/Moviez --electron-version 0.30.2 --overwrite --icon=./app/img/app-icon.icns"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron"
+  ],
+  "author": "Andrew",
+  "license": "",
+  "devDependencies": {
+    "electron": "^1.4.1",
+    "eslint": "^3.18.0",
+    "eslint-config-airbnb-base": "^11.1.1",
+    "eslint-plugin-import": "^2.2.0",
+    "gulp-sass": "^2.3.2",
+    "node-sass": "^4.5.0"
+  }
+}

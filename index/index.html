@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Moviez</title>
+  <link href="./index.css" type='text/css' rel="stylesheet" />
+  <link href="./circle-graph.css" type='text/css' rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+
+</head>
+<body>
+  <div id="container">
+    <div id="movieCount"></div>
+    <div class="row" id="insertHere">
+
+    </div>
+  </div>
+  <div id="loading">
+    <div id="pct" class="c100 p25">
+      <span id="pct-num">25%</span>
+      <div class="slice">
+        <div class="bar"></div>
+        <div class="fill"></div>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script>
+require('./index.js')
+</script>
+</html>
