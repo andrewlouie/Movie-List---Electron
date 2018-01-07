@@ -5,13 +5,14 @@ const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
+const settings = require('electron-settings');
 
 const path = require('path');
 const url = require('url');
 
 const { dialog } = require('electron');
 
-global.folder = 'E:\\';
+global.folder = '.';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -27,19 +28,21 @@ function createWindow() {
   });
 
   const menuTemplate = [
-    {
-      label: 'Set &Directory',
-      click: () => {
-        const newfolder = dialog.showOpenDialog({ properties: ['openDirectory'] });
-        if (typeof newfolder !== 'undefined') {
-          global.folder = newfolder[0];
-          mainWindow.webContents.send('changeFolder');
-        }
-      },
-    },
+
     {
       label: '&Sort',
       submenu: [
+        {
+          label: 'Set &Directory',
+          click: () => {
+            const newfolder = dialog.showOpenDialog({ properties: ['openDirectory'] });
+            if (typeof newfolder !== 'undefined') {
+              global.folder = newfolder[0];
+              settings.set('folder', newfolder[0]);
+              mainWindow.webContents.send('changeFolder');
+            }
+          },
+        },
         {
           label: '&Title Asc',
           click: () => {
@@ -98,7 +101,7 @@ function createWindow() {
   mainWindow.maximize();
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -112,7 +115,10 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+  global.folder = settings.get('folder') ? settings.get('folder') : '.';
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

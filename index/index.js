@@ -4,12 +4,13 @@
 
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 const fs = require('fs');
-const childProcess = require('child_process');
 const ipc = require('electron').ipcRenderer;
 const remote = require('electron').remote;
+const path = require('path');
+const shell = require('electron').shell;
 
 const cont = document.getElementById('insertHere');
-let folder = 'e:\\';
+let folder = '.';
 const movies = [];
 let tile = true;
 
@@ -37,13 +38,16 @@ function reset() {
 
 function showMovies() {
   const view = (tile ? 'tile' : 'list');
+  if (view === 'list') {
+    $(cont).css('display', 'block');
+  }
   movies.forEach((movie, b) => {
     const div = document.createElement('div');
     if (b === 0) div.className = `${view} active`;
     else div.className = view;
-    div.innerHTML = `<img src="file:///${folder}${movie.title}/cover.jpg" /><span class="title">${movie.title}</span>`;
+    div.innerHTML = `<img src="file:///${path.join(folder, movie.title, 'cover.jpg')}" /><span class="title">${movie.title}</span>`;
     div.addEventListener('click', () => {
-      childProcess.exec(`start "" "${folder}${movie.title}"`);
+      shell.openItem(path.join(folder, movie.title));
     });
     div.addEventListener('mousedown', () => {
       $('.active').removeClass('active');
@@ -67,7 +71,7 @@ function loadFolder() {
           document.getElementById('pct').className = `c100 p${pct}`;
           document.getElementById('pct-num').innerHTML = `${pct}%`;
         }
-        fs.stat(`${folder}${results[a]}\\cover.jpg`, (error, stat) => {
+        fs.stat(path.join(folder, results[a], 'cover.jpg'), (error, stat) => {
           if (!error) {
             movies.push({ title: results[a], mdate: stat.mtime });
             b += 1;
@@ -85,6 +89,7 @@ function loadFolder() {
   });
 }
 
+folder = remote.getGlobal('folder');
 loadFolder();
 
 ipc.on('changeFolder', () => {
@@ -95,12 +100,14 @@ ipc.on('changeFolder', () => {
 ipc.on('viewTile', () => {
   tile = true;
   $('.list').removeClass('list').addClass('tile');
+  $(cont).css('display', 'grid');
   checkIfInView($('.active'));
 });
 
 ipc.on('viewList', () => {
   tile = false;
   $('.tile').removeClass('tile').addClass('list');
+  $(cont).css('display', 'block');
   checkIfInView($('.active'));
 });
 
@@ -206,8 +213,3 @@ window.addEventListener('keydown', (e) => {
     default: break;
   }
 });
-
-/*
-compile it to exe?
-slide out thing on click files, frame with imdb or something?
-*/

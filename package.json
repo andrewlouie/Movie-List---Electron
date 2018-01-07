@@ -3,22 +3,51 @@
   "version": "1.0.0",
   "description": "Movie application",
   "main": "main.js",
+  "license": "MIT",
+  "author": "Andrew Aaron <andrew_louie@hotmail.com>",
   "scripts": {
-    "start": "electron .",
-    "package": "electron-packager ./ Moviez --all --out ~/Desktop/Moviez --electron-version 0.30.2 --overwrite --icon=./app/img/app-icon.icns"
+    "postinstall": "install-app-deps",
+    "start": "npm install && electron .",
+    "pack": "build --dir",
+    "dist": "build"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron"
-  ],
-  "author": "Andrew",
-  "license": "",
+  "build": {
+    "appId": "Moviez",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    },
+    "win": {
+      "target": "squirrel",
+      "icon": "./movie.ico"
+    }
+  },
   "devDependencies": {
     "electron": "^1.4.1",
+    "electron-builder": "^19.52.1",
     "eslint": "^3.18.0",
     "eslint-config-airbnb-base": "^11.1.1",
     "eslint-plugin-import": "^2.2.0",
     "gulp-sass": "^2.3.2",
     "node-sass": "^4.5.0"
+  },
+  "dependencies": {
+    "electron-settings": "^3.1.4"
   }
 }
