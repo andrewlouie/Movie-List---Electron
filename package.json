@@ -34,7 +34,7 @@
       ]
     },
     "win": {
-      "target": "squirrel",
+      "target": "NSIS",
       "icon": "./movie.ico"
     }
   },
