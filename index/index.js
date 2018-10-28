@@ -14,10 +14,10 @@ let folder = '.';
 const movies = [];
 let tile = true;
 
-function checkIfInView(element) {
+function checkIfInView() {
   const container = $('.row');
-  const offset = element[0].offsetTop;
-  const height = element.innerHeight();
+  const offset = $(document.activeElement).offsetTop;
+  const height = $(document.activeElement).innerHeight();
   const scrollPosition = container.scrollTop();
   const diff = (height + offset) - (scrollPosition + container.innerHeight());
   if ((height + offset) > (scrollPosition + container.innerHeight())) {
@@ -45,13 +45,10 @@ function showMovies() {
     const div = document.createElement('div');
     if (b === 0) div.className = `${view} active`;
     else div.className = view;
+    div.setAttribute('tabindex', 0);
     div.innerHTML = `<img src="file:///${path.join(folder, movie.title, 'cover.jpg')}" /><span class="title">${movie.title}</span>`;
     div.addEventListener('click', () => {
       shell.openItem(path.join(folder, movie.title));
-    });
-    div.addEventListener('mousedown', () => {
-      $('.active').removeClass('active');
-      $(div).addClass('active');
     });
     cont.appendChild(div);
   });
@@ -89,6 +86,18 @@ function loadFolder() {
   });
 }
 
+function filterResults() {
+  const value = document.getElementById('search').value.toUpperCase();
+  $('#insertHere').children().each((idx, elem) => {
+    const $elem = $(elem);
+    if ($elem.find('.title').text().toUpperCase().includes(value)) {
+      $elem.show();
+    } else {
+      $elem.hide();
+    }
+  });
+}
+
 folder = remote.getGlobal('folder');
 loadFolder();
 
@@ -101,14 +110,14 @@ ipc.on('viewTile', () => {
   tile = true;
   $('.list').removeClass('list').addClass('tile');
   $(cont).css('display', 'grid');
-  checkIfInView($('.active'));
+  checkIfInView();
 });
 
 ipc.on('viewList', () => {
   tile = false;
   $('.tile').removeClass('tile').addClass('list');
   $(cont).css('display', 'block');
-  checkIfInView($('.active'));
+  checkIfInView();
 });
 
 ipc.on('sortByTitleAsc', () => {
@@ -160,49 +169,50 @@ ipc.on('sortByDateAsc', () => {
 });
 
 window.addEventListener('keydown', (e) => {
-  const selected = document.getElementsByClassName('active')[0];
+  if (e.target === document.getElementById('search')) {
+    return;
+  }
+  const selected = document.activeElement;
   switch (e.keyCode) {
     case 39: {
-      const next = selected.nextElementSibling;
-      if (next !== null) {
-        $(next).addClass('active');
-        $(selected).removeClass('active');
-        checkIfInView($(next));
+      const next = $(selected).nextAll(':visible');
+      if (next.length) {
+        $(next)[0].focus();
+        checkIfInView();
       }
       break;
     }
     case 37: {
-      const prev = selected.previousElementSibling;
-      if (prev !== null) {
-        $(prev).addClass('active');
-        $(selected).removeClass('active');
-        checkIfInView($(prev));
+      const prev = $(selected).prevAll(':visible');
+      if (prev.length) {
+        $(prev)[0].focus();
+        checkIfInView();
       }
       break;
     }
     case 38: {
       e.preventDefault();
-      let up = selected.previousElementSibling;
-      if (up !== null) {
-        while (up.offsetLeft !== selected.offsetLeft && up.previousElementSibling !== null) {
-          up = up.previousElementSibling;
+      const up = $(selected).prevAll(':visible');
+      if (up.length) {
+        let a = 0;
+        while (a < up.length && up[a].offsetLeft !== selected.offsetLeft) {
+          a += 1;
         }
-        $(up).addClass('active');
-        $(selected).removeClass('active');
-        checkIfInView($(up));
+        $(up[a]).focus();
+        checkIfInView();
       }
       break;
     }
     case 40: {
       e.preventDefault();
-      let down = selected.nextElementSibling;
-      if (down !== null) {
-        while (down.offsetLeft !== selected.offsetLeft && down.nextElementSibling !== null) {
-          down = down.nextElementSibling;
+      const down = $(selected).nextAll(':visible');
+      if (down.length) {
+        let b = 0;
+        while (b < down.length && down[b].offsetLeft !== selected.offsetLeft) {
+          b += 1;
         }
-        $(down).addClass('active');
-        $(selected).removeClass('active');
-        checkIfInView($(down));
+        $(down[b]).focus();
+        checkIfInView();
       }
       break;
     }
@@ -210,6 +220,87 @@ window.addEventListener('keydown', (e) => {
       selected.click();
       break;
     }
+    case 34: {
+      e.preventDefault();
+      const down = $(selected).nextAll(':visible');
+      if (down.length) {
+        let count = 3;
+        let c = 0;
+        while (c < down.length && (down[c].offsetLeft !== selected.offsetLeft || count)) {
+          if (down[c].offsetLeft === selected.offsetLeft) {
+            count -= 1;
+          }
+          c += 1;
+        }
+        if (down[c]) {
+          $(down[c]).focus();
+        } else {
+          $('#insertHere').children().last().focus();
+        }
+        checkIfInView();
+      }
+      break;
+    }
+    case 33: {
+      e.preventDefault();
+      const up = $(selected).prevAll(':visible');
+      if (up.length) {
+        let count = 3;
+        let d = 0;
+        while (d < up.length && (count || up[d].offsetLeft !== selected.offsetLeft)) {
+          if (up[d].offsetLeft === selected.offsetLeft) {
+            count -= 1;
+          }
+          d += 1;
+        }
+        if (up[d]) {
+          $(up[d]).focus();
+        } else {
+          $('#insertHere').children().first().focus();
+        }
+        checkIfInView();
+      }
+      break;
+    }
+    case 109:
+    case 189: {
+      const $row = $('#insertHere');
+      const size = parseInt($row.attr('data-size'), 10);
+      if (size > 0) {
+        $row.attr('data-size', size - 1);
+      }
+      break;
+    }
+    case 107:
+    case 187: {
+      const $row = $('#insertHere');
+      const size = parseInt($row.attr('data-size'), 10);
+      if (size < 8) {
+        $row.attr('data-size', size + 1);
+      }
+      break;
+    }
+    case 36: {
+      $('#insertHere').children().first().focus();
+      checkIfInView();
+      break;
+    }
+    case 35: {
+      $('#insertHere').children().last().focus();
+      checkIfInView();
+      break;
+    }
+    case 70: {
+      const search = document.getElementById('search');
+      if (document.activeElement !== search) {
+        e.preventDefault();
+        search.focus();
+      }
+      break;
+    }
     default: break;
   }
 });
+
+document.getElementById('search').addEventListener('keyup', filterResults);
+document.getElementById('search').addEventListener('search', filterResults);

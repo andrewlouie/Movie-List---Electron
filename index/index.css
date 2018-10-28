@@ -3,20 +3,43 @@
   display: grid;
   height: 95vh;
   overflow-y: scroll;
-  grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+  grid-template-columns: repeat(10, minmax(10%, 1fr));
+  grid-template-rows: repeat(3, minmax(max-content, max-content));
+}
+.row[data-size="1"] {
+  grid-template-columns: repeat(9, minmax(11.1%, 1fr));
+}
+.row[data-size="2"] {
+  grid-template-columns: repeat(7, minmax(14.2%, 1fr));
+}
+.row[data-size="3"] {
+  grid-template-columns: repeat(6, minmax(16.6%, 1fr));
+}
+.row[data-size="4"] {
+  grid-template-columns: repeat(5, minmax(20%, 1fr));
+}
+.row[data-size="5"] {
+  grid-template-columns: repeat(4, minmax(25%, 1fr));
+}
+.row[data-size="6"] {
+  grid-template-columns: repeat(3, minmax(33.3%, 1fr));
+}
+.row[data-size="7"] {
+  grid-template-columns: repeat(2, minmax(50%, 1fr));
+}
+.row[data-size="8"] {
+  grid-template-columns: repeat(1, minmax(100%, 1fr));
 }
 
 .tile {
   position: relative;
-  min-width: 190px;
-  max-width: 240px;
   padding: 10px;
   margin: 6px;
   cursor: pointer;
-  transition: all .5s;
+  transition: all 0.5s;
   box-shadow: 0 0 1px 2px #ccc;
 }
-.tile:hover, .tile.active {
+.tile:hover, .tile:focus {
   box-shadow: 3px 3px 7px 3px #777;
 }
 .tile .title {
@@ -40,11 +63,11 @@
   padding: 10px;
   margin: 6px;
   cursor: pointer;
-  transition: all .5s;
+  transition: all 0.5s;
   box-shadow: 0 0 1px 2px #ccc;
   box-sizing: border-box;
 }
-.list:hover, .list.active {
+.list:hover, .list:focus {
   box-shadow: 3px 3px 7px 3px #777;
 }
 .list .title {
@@ -90,4 +113,18 @@ body {
   color: #fff;
   background: #000;
   border-radius: 0 0 0 6px;
+}
+
+#searchBox {
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#search {
+  width: 300px;
+  padding: 5px 10px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
