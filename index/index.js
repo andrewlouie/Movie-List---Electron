@@ -54,6 +54,18 @@ function showMovies() {
   });
 }
 
+function sortByDateAsc() {
+  movies.sort((a, b) => {
+    if (a.mdate < b.mdate) return 1;
+    else if (b.mdate < a.mdate) return -1;
+    return 0;
+  });
+  reset();
+  showMovies();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('container').style.display = 'block';
+}
+
 function loadFolder() {
   reset();
   movies.length = 0;
@@ -75,7 +87,7 @@ function loadFolder() {
           } else console.log(`${results[a]} not added`);
           if (a < results.length - 1) asyncloop(a + 1);
           else {
-            showMovies();
+            sortByDateAsc();
             document.getElementById('loading').style.display = 'none';
             document.getElementById('container').style.display = 'block';
             document.getElementById('movieCount').innerHTML = `${b} movies found`;
@@ -156,17 +168,7 @@ ipc.on('sortByDateDec', () => {
   document.getElementById('container').style.display = 'block';
 });
 
-ipc.on('sortByDateAsc', () => {
-  movies.sort((a, b) => {
-    if (a.mdate < b.mdate) return 1;
-    else if (b.mdate < a.mdate) return -1;
-    return 0;
-  });
-  reset();
-  showMovies();
-  document.getElementById('loading').style.display = 'none';
-  document.getElementById('container').style.display = 'block';
-});
+ipc.on('sortByDateAsc', sortByDateAsc);
 
 window.addEventListener('keydown', (e) => {
   if (e.target === document.getElementById('search')) {
@@ -175,6 +177,10 @@ window.addEventListener('keydown', (e) => {
   const selected = document.activeElement;
   switch (e.keyCode) {
     case 39: {
+      if (selected === document.body) {
+        $('#insertHere').children().first().focus();
+        return;
+      }
       const next = $(selected).nextAll(':visible');
       if (next.length) {
         $(next)[0].focus();
@@ -183,6 +189,10 @@ window.addEventListener('keydown', (e) => {
       break;
     }
     case 37: {
+      if (selected === document.body) {
+        $('#insertHere').children().first().focus();
+        return;
+      }
       const prev = $(selected).prevAll(':visible');
       if (prev.length) {
         $(prev)[0].focus();
@@ -192,6 +202,10 @@ window.addEventListener('keydown', (e) => {
     }
     case 38: {
       e.preventDefault();
+      if (selected === document.body) {
+        $('#insertHere').children().first().focus();
+        return;
+      }
       const up = $(selected).prevAll(':visible');
       if (up.length) {
         let a = 0;
@@ -205,6 +219,10 @@ window.addEventListener('keydown', (e) => {
     }
     case 40: {
       e.preventDefault();
+      if (selected === document.body) {
+        $('#insertHere').children().first().focus();
+        return;
+      }
       const down = $(selected).nextAll(':visible');
       if (down.length) {
         let b = 0;
@@ -222,6 +240,10 @@ window.addEventListener('keydown', (e) => {
     }
     case 34: {
       e.preventDefault();
+      if (selected === document.body) {
+        $('#insertHere').children().first().focus();
+        return;
+      }
       const down = $(selected).nextAll(':visible');
       if (down.length) {
         let count = 3;
@@ -243,6 +265,10 @@ window.addEventListener('keydown', (e) => {
     }
     case 33: {
       e.preventDefault();
+      if (selected === document.body) {
+        $('#insertHere').children().first().focus();
+        return;
+      }
       const up = $(selected).prevAll(':visible');
       if (up.length) {
         let count = 3;
@@ -275,7 +301,7 @@ window.addEventListener('keydown', (e) => {
     case 187: {
       const $row = $('#insertHere');
       const size = parseInt($row.attr('data-size'), 10);
-      if (size < 8) {
+      if (size < 15) {
         $row.attr('data-size', size + 1);
       }
       break;
