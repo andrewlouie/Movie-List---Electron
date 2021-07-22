@@ -13,6 +13,8 @@ const cont = document.getElementById('insertHere');
 let folder = '.';
 const movies = [];
 let tile = true;
+let showFavouritesOnly = false;
+let favourites = [];
 
 function checkIfInView() {
   const container = $('.row');
@@ -36,21 +38,72 @@ function reset() {
   cont.innerHTML = '';
 }
 
-function showMovies() {
-  const view = (tile ? 'tile' : 'list');
-  if (view === 'list') {
-    $(cont).css('display', 'block');
+function addOrRemoveFavourite(movieTitle) {
+  if (favourites.includes(movieTitle)) {
+    favourites = favourites.filter(title => title !== movieTitle);
+  } else {
+    favourites.push(movieTitle);
   }
-  movies.forEach((movie, b) => {
-    const div = document.createElement('div');
-    if (b === 0) div.className = `${view} active`;
-    else div.className = view;
-    div.setAttribute('tabindex', 0);
-    div.innerHTML = `<img src="file:///${path.join(folder, movie.title, 'cover.jpg')}" /><span class="title">${movie.title}</span>`;
-    div.addEventListener('click', () => {
-      shell.openItem(path.join(folder, movie.title));
+}
+
+function loadFavourites(cb) {
+  return fs.readFile(path.join(folder, 'favourites.txt'), (err, data) => {
+    if (err) {
+      cb([]);
+    } else {
+      let json;
+      try {
+        json = JSON.parse(data);
+      } catch (e) {
+        json = [];
+      }
+      cb(json);
+    }
+  });
+}
+
+function saveFavourites() {
+  fs.writeFile(path.join(folder, 'favourites.txt'), JSON.stringify(favourites, 2, null), (err) => {
+    if (err) {
+      console.error('Error writing favourites', err);
+    }
+  });
+}
+
+function showMovies() {
+  loadFavourites((newFavourites) => {
+    favourites = newFavourites;
+    const view = (tile ? 'tile' : 'list');
+    if (view === 'list') {
+      $(cont).css('display', 'block');
+    }
+    movies.forEach((movie, b) => {
+      if (showFavouritesOnly && !favourites.includes(movie.title)) {
+        return;
+      }
+      const div = document.createElement('div');
+      if (b === 0) div.className = `${view} active`;
+      else div.className = view;
+      div.setAttribute('tabindex', 0);
+      const favourite = favourites.includes(movie.title);
+      div.innerHTML = `<button class="star${favourite ? ' active' : ''}">${favourite ? '★' : '☆'}</button><img src="file:///${path.join(folder, movie.title, 'cover.jpg')}" /><span class="title">${movie.title}</span>`;
+      div.addEventListener('click', () => {
+        shell.openItem(path.join(folder, movie.title));
+      });
+      div.getElementsByTagName('button')[0].addEventListener('click', (evt) => {
+        evt.stopPropagation();
+        if (favourites.includes(movie.title)) {
+          evt.target.innerHTML = '☆';
+          evt.target.classList.remove('active');
+        } else {
+          evt.target.innerHTML = '★';
+          evt.target.classList.add('active');
+        }
+        addOrRemoveFavourite(movie.title);
+        saveFavourites();
+      });
+      cont.appendChild(div);
     });
-    cont.appendChild(div);
   });
 }
 
@@ -127,9 +180,23 @@ ipc.on('viewTile', () => {
 
 ipc.on('viewList', () => {
   tile = false;
-  $('.tile').removeClass('tile').addClass('list');
-  $(cont).css('display', 'block');
   checkIfInView();
+});
+
+ipc.on('viewFavourites', () => {
+  showFavouritesOnly = true;
+  reset();
+  showMovies();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('container').style.display = 'block';
+});
+
+ipc.on('viewAll', () => {
+  showFavouritesOnly = false;
+  reset();
+  showMovies();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('container').style.display = 'block';
 });
 
 ipc.on('sortByTitleAsc', () => {

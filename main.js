@@ -84,6 +84,26 @@ function createWindow() {
             mainWindow.webContents.send('viewList');
           },
         },
+        { type: 'separator' },
+        {
+          label: 'Show &Favourites',
+          click: () => {
+            mainWindow.webContents.send('viewFavourites');
+          },
+        },
+        {
+          label: 'Show &All',
+          click: () => {
+            mainWindow.webContents.send('viewAll');
+          },
+        },
+        { type: 'separator' },
+        {
+          label: 'Open &Dev Tools',
+          click: () => {
+            mainWindow.webContents.openDevTools();
+          },
+        },
       ],
     },
   ];
@@ -101,7 +121,7 @@ function createWindow() {
   }));
 
   // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {

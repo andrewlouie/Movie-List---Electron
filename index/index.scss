@@ -165,3 +165,13 @@ body {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+.star {
+  position: absolute;
+  right: 0;
+  border: 0;
+  font-size: 25px;
+  background: rgba(255, 255, 255, 0.4);
+  color: #4400de;
+  border-bottom-left-radius: 8px;
+}

@@ -1,6 +1,6 @@
 {
   "name": "moviez",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Movie application",
   "main": "main.js",
   "license": "MIT",
@@ -14,19 +14,8 @@
   },
   "build": {
     "appId": "Moviez",
-    "dmg": {
-      "contents": [
-        {
-          "x": 110,
-          "y": 150
-        },
-        {
-          "x": 240,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
+    "mac": {
+      "target": "pkg"
     },
     "linux": {
       "target": [
@@ -41,7 +30,7 @@
   },
   "devDependencies": {
     "electron": "^1.8.8",
-    "electron-builder": "^19.56.2",
+    "electron-builder": "^22.11.7",
     "eslint": "^3.18.0",
     "eslint-config-airbnb-base": "^11.1.1",
     "eslint-plugin-import": "^2.2.0"
