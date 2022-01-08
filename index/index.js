@@ -5,9 +5,11 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 const fs = require('fs');
 const ipc = require('electron').ipcRenderer;
-const remote = require('electron').remote;
 const path = require('path');
 const shell = require('electron').shell;
+const Store = require('electron-store');
+
+const store = new Store();
 
 const cont = document.getElementById('insertHere');
 let folder = '.';
@@ -163,11 +165,11 @@ function filterResults() {
   });
 }
 
-folder = remote.getGlobal('folder');
+folder = store.get('folder');
 loadFolder();
 
 ipc.on('changeFolder', () => {
-  folder = remote.getGlobal('folder');
+  folder = store.get('folder');
   loadFolder();
 });
 

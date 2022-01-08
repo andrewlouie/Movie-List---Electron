@@ -5,12 +5,15 @@ const app = electron.app;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
-const settings = require('electron-settings');
 
 const path = require('path');
 const url = require('url');
 
 const { dialog } = require('electron');
+
+const Store = require('electron-store');
+
+const store = new Store();
 
 global.folder = '.';
 
@@ -25,6 +28,12 @@ function createWindow() {
     height: 600,
     icon: './movie.ico',
     title: 'Moviez',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
   });
 
   const menuTemplate = [
@@ -35,10 +44,10 @@ function createWindow() {
         {
           label: 'Set &Directory',
           click: () => {
-            const newfolder = dialog.showOpenDialog({ properties: ['openDirectory'] });
+            const newfolder = dialog.showOpenDialogSync({ properties: ['openDirectory'] });
             if (typeof newfolder !== 'undefined') {
               global.folder = newfolder[0];
-              settings.set('folder', newfolder[0]);
+              store.set('folder', newfolder[0]);
               mainWindow.webContents.send('changeFolder');
             }
           },
@@ -135,9 +144,9 @@ function createWindow() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
+app.whenReady().then(() => {
   createWindow();
-  global.folder = settings.get('folder') ? settings.get('folder') : '.';
+  global.folder = store.get('folder') ? store.get('folder') : '.';
 });
 
 // Quit when all windows are closed.
