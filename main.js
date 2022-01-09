@@ -1,13 +1,15 @@
-/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
+const path = require('path');
+const url = require('url');
+
 const electron = require('electron');
+
 // Module to control application life.
 const app = electron.app;
+
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 
-const path = require('path');
-const url = require('url');
 
 const { dialog } = require('electron');
 
@@ -29,6 +31,7 @@ function createWindow() {
     icon: './movie.ico',
     title: 'Moviez',
     webPreferences: {
+      webSecurity: false,
       nodeIntegration: true,
       contextIsolation: false,
       enableRemoteModule: true,
@@ -82,19 +85,6 @@ function createWindow() {
       label: '&View',
       submenu: [
         {
-          label: '&Tile',
-          click: () => {
-            mainWindow.webContents.send('viewTile');
-          },
-        },
-        {
-          label: '&List',
-          click: () => {
-            mainWindow.webContents.send('viewList');
-          },
-        },
-        { type: 'separator' },
-        {
           label: 'Show &Favourites',
           click: () => {
             mainWindow.webContents.send('viewFavourites');
@@ -123,11 +113,18 @@ function createWindow() {
   mainWindow.maximize();
 
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, './index/index.html'),
+  // mainWindow.loadURL(url.format({
+  //   pathname: path.join(__dirname, './index/index.html'),
+  //   protocol: 'file:',
+  //   slashes: true,
+  // }));
+
+  const startUrl = process.env.ELECTRON_START_URL || url.format({
+    pathname: path.join(__dirname, '/build/index.html'),
     protocol: 'file:',
     slashes: true,
-  }));
+  });
+  mainWindow.loadURL(startUrl);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();

@@ -1,0 +1,36 @@
+
+.tile {
+    position: relative;
+    padding: 10px;
+    margin: 6px;
+    cursor: pointer;
+    transition: all 0.5s;
+    box-shadow: 0 0 1px 2px #ccc;
+  }
+  .tile:hover, .tile:focus {
+    box-shadow: 3px 3px 7px 3px #777;
+  }
+  .tile .title {
+    position: absolute;
+    bottom: 3px;
+    left: 5px;
+    width: calc(100% - 10px);
+    font-family: Garamond;
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .tile img {
+    width: 100%;
+    padding-bottom: 25px;
+  }
+
+.star {
+    position: absolute;
+    right: 0;
+    border: 0;
+    font-size: 25px;
+    background: rgba(255, 255, 255, 0.4);
+    color: #4400de;
+    border-bottom-left-radius: 8px;
+  }
