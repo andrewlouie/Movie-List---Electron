@@ -1,10 +1,8 @@
 {
-    "extends": "@igloosoftware/eslint-config-igloo/react",
     "rules": {
       "jsx-a11y/label-has-associated-control": 0,
       "react/react-in-jsx-scope": 0,
-      "react/jsx-filename-extension": 0,
-      "import/no-unresolved": [2, { "ignore": [ "render-with-providers" ] }]
+      "react/jsx-filename-extension": 0
     }
   }
   

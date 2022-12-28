@@ -1,6 +1,6 @@
 import { MouseEvent } from 'react';
 
-import { Movie } from '../types/types.ts';
+import { Movie } from '../types/types';
 
 import './GridItem.css';
 

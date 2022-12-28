@@ -6,10 +6,10 @@ import TextField from '@mui/material/TextField';
 
 import './App.css';
 
-import Grid from './Grid/Grid.tsx';
-import { SORT_ORDERS, Movie } from './types/types.ts';
-import MovieCount from './MovieCount/MovieCount.tsx';
-import CircularProgressWithLabel from './CircularProgressWithLabel/CircularProgressWithLabel.tsx';
+import Grid from './Grid/Grid';
+import { SORT_ORDERS, Movie } from './types/types';
+import MovieCount from './MovieCount/MovieCount';
+import CircularProgressWithLabel from './CircularProgressWithLabel/CircularProgressWithLabel';
 
 const fs = window.require('fs');
 const ipc = window.require('electron').ipcRenderer;
@@ -84,7 +84,7 @@ function App() {
       if (results.length > 0) {
         const currentpct = 0;
         let b = 0;
-        const notAdded = [];
+        const notAdded: string[] = [];
         (function asyncloop(a) {
           const pct = Math.floor((a / (results.length - 1)) * 100);
           if (pct !== currentpct) {
@@ -131,7 +131,7 @@ function App() {
     saveFavourites();
   };
 
-  const sortMovies = (a, b) => {
+  const sortMovies: (a: Movie, b: Movie) => number = (a, b) => {
     /* eslint-disable curly */
     switch (sortOrder) {
       case SORT_ORDERS.TITLE_ASC:
@@ -139,7 +139,7 @@ function App() {
         else if (b.title < a.title) return 1;
         return 0;
       case SORT_ORDERS.TITLE_DESC:
-        if (a.title < b.titlee) return 1;
+        if (a.title < b.title) return 1;
         else if (b.title < a.title) return -1;
         return 0;
       case SORT_ORDERS.DATE_ASC:
@@ -151,6 +151,7 @@ function App() {
         else if (b.mdate < a.mdate) return -1;
         return 0;
     }
+    return 0;
   };
 
   const handleKeyDown = (evt) => {

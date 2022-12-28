@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-/* eslint-disable import/group-exports */
 export interface Movie {
   title: string;
   mdate: Date;

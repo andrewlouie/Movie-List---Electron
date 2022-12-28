@@ -1,5 +1,5 @@
-import { Movie } from '../types/types.ts';
-import GridItem from '../GridItem/GridItem.tsx';
+import { Movie } from '../types/types';
+import GridItem from '../GridItem/GridItem';
 
 import './Grid.css';
 
