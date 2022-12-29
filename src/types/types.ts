@@ -9,3 +9,5 @@ export enum SORT_ORDERS {
   TITLE_ASC,
   TITLE_DESC,
 }
+
+export type Labels = { string?: string[] };

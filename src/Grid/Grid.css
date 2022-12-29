@@ -1,7 +1,7 @@
 .row {
     position: relative;
     display: grid;
-    height: 95vh;
+    height: 90vh;
     overflow-y: scroll;
     grid-template-columns: repeat(15, minmax(6.66%, 1fr));
     grid-template-rows: repeat(3, minmax(max-content, max-content));

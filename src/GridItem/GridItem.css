@@ -34,3 +34,22 @@
     color: #4400de;
     border-bottom-left-radius: 8px;
   }
+
+  .labels {
+    position: absolute;
+    left: 0;
+    border: 0;
+    font-size: 25px;
+    background: rgba(255, 255, 255, 0.4);
+    color: #4400de;
+    border-bottom-right-radius: 8px;
+  }
+
+  .tile button {
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .tile button:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }

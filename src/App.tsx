@@ -7,9 +7,11 @@ import TextField from '@mui/material/TextField';
 import './App.css';
 
 import Grid from './Grid/Grid';
-import { SORT_ORDERS, Movie } from './types/types';
+import { SORT_ORDERS, Movie, Labels } from './types/types';
 import MovieCount from './MovieCount/MovieCount';
 import CircularProgressWithLabel from './CircularProgressWithLabel/CircularProgressWithLabel';
+import LabelsModal from './LabelsModal/LabelsModal';
+import LabelSearch from './LabelSearch/LabelSearch';
 
 const fs = window.require('fs');
 const ipc = window.require('electron').ipcRenderer;
@@ -25,8 +27,13 @@ function App() {
   const [percent, setPercent] = useState<number>(0);
   const [movieCount, setMovieCount] = useState<number>(0);
   const [favourites, setFavourites] = useState<string[]>([]);
+  const [labels, setLabels] = useState<Labels>({});
   const [showFavourites, setShowFavourites] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedMovie, setSelectedMovie] = useState<string>("");
+  const [notAdded, setNotAdded] = useState<string[]>([]);
+  const [labelSearchValue, setLabelSearchValue] = useState<string[]>([]);
 
   const [sortOrder, setSortOrder] = useState(SORT_ORDERS.DATE_DESC);
   const [size, setSize] = useState<number>(6);
@@ -76,6 +83,17 @@ function App() {
         setFavourites(json);
       }
     });
+    fs.readFile(path.join(folder, 'labels.txt'), (err, data) => {
+      if (!err) {
+        let json;
+        try {
+          json = JSON.parse(data);
+        } catch (e) {
+          json = [];
+        }
+        setLabels(json);
+      }
+    });
     fs.readdir(folder, (err: Error, results: string[]) => {
       if (err) {
         console.log(err);
@@ -84,7 +102,6 @@ function App() {
       if (results.length > 0) {
         const currentpct = 0;
         let b = 0;
-        const notAdded: string[] = [];
         (function asyncloop(a) {
           const pct = Math.floor((a / (results.length - 1)) * 100);
           if (pct !== currentpct) {
@@ -103,7 +120,7 @@ function App() {
               setMovieCount(b);
               setIsLoading(false);
               setMovies(newMovies);
-              console.log('Not added', notAdded);
+              setNotAdded(notAdded);
             }
           });
         })(0);
@@ -173,25 +190,84 @@ function App() {
     }
   };
 
+  const showLabelsModal = (title: string) => {
+    setIsModalOpen(true);
+    setSelectedMovie(title);
+  }
+
+  const saveLabels = () => {
+    // Don't write empty arrays
+    const labelsToWrite = Object.fromEntries(Object.entries(labels).filter(([_, val]) => val.length));
+    fs.writeFile(path.join(folder, 'labels.txt'), JSON.stringify(labelsToWrite, null, 2), (err: Error) => {
+      if (err) {
+        console.error('Error writing labels', err);
+      }
+    });
+  };
+
+  const updateLabels = (newLabelsForSelection: string[]) => {
+    setLabels({ ...labels, [selectedMovie]: newLabelsForSelection })
+  };
+
+
+  // Sort
   let sortedMovies = movies.sort(sortMovies);
+
+  // Select favourites
   if (showFavourites) {
     sortedMovies = sortedMovies.filter((movie) => favourites.includes(movie.title));
   }
+
+  // Select search matches
   sortedMovies = sortedMovies.filter((movie) => movie.title.toLowerCase().includes(searchInput.toLowerCase()));
+
+  //Select label matches
+  sortedMovies = sortedMovies.filter((movie) => {
+    const labelsForMovie = labels[movie.title] || [];
+    if (!labelSearchValue.length) {
+      return true;
+    }
+    return labelsForMovie.some((v: string) => labelSearchValue.includes(v));
+  });
 
   return (
     <div className='App' onKeyDown={handleKeyDown} role='menu' tabIndex={0}>
-      {isLoading && <div style={{ marginTop: '15px' }}><CircularProgressWithLabel value={percent} /></div>}
+      {isLoading && <div className="App__spinner"><CircularProgressWithLabel value={percent} /></div>}
       {!isLoading && <>
-        <MovieCount count={movieCount} />
-        <TextField
-          size='small'
-          label='Search'
-          type='search'
-          value={searchInput}
-          onChange={(evt) => setSearchInput(evt.target.value)} />
-        <Grid size={size} favourites={favourites} addOrRemoveFavourite={addOrRemoveFavourite} folder={folder} movies={sortedMovies} />
+        <MovieCount count={movieCount} notAdded={notAdded} />
+        <div className="App__search">
+          <TextField
+            variant="standard"
+            label='Search'
+            sx={{ width: "250px" }}
+            type='search'
+            value={searchInput}
+            onChange={(evt) => setSearchInput(evt.target.value)} />
+          <LabelSearch
+            labels={labels}
+            labelSearchValue={labelSearchValue}
+            setLabelSearchValue={setLabelSearchValue}/>
+        </div>
+        <Grid
+          size={size}
+          labels={labels}
+          folder={folder}
+          movies={sortedMovies}
+          favourites={favourites}
+          showLabelsModal={showLabelsModal}
+          addOrRemoveFavourite={addOrRemoveFavourite}
+          />
       </>}
+      <LabelsModal
+        open={isModalOpen}
+        labels={labels}
+        updateLabels={updateLabels}
+        handleClose={() => {
+          saveLabels();
+          setIsModalOpen(false);
+        }}
+        currentTitle={selectedMovie}
+      />
     </div>
   );
 }

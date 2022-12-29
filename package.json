@@ -1,6 +1,6 @@
 {
   "name": "moviez",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Movie application",
   "main": "main.js",
   "license": "MIT",
@@ -51,6 +51,7 @@
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.2.7",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",

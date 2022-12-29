@@ -1,3 +1,16 @@
 .App {
-  padding-top: 36px;
+  padding: 16px 8px;
+}
+
+.App__spinner {
+  display: flex;
+  height: calc(100vh - 32px);
+  align-items: center;
+  justify-content: center;
+}
+
+.App__search {
+  width: 600px;
+  display: flex;
+  justify-content: space-between;
 }

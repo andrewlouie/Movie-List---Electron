@@ -1,29 +1,40 @@
-import { Movie } from '../types/types';
+import { Labels, Movie } from '../types/types';
 import GridItem from '../GridItem/GridItem';
 
 import './Grid.css';
 
-
-interface Props {
-  movies: Movie[],
-  folder: string,
-  size: number,
-  favourites: string[],
-  addOrRemoveFavourite: Function,
+interface GridProps {
+  size: number;
+  movies: Movie[];
+  labels: Labels;
+  folder: string;
+  favourites: string[];
+  addOrRemoveFavourite: Function;
+  showLabelsModal: Function;
 }
 
-function Grid(props: Props) {
+function Grid(props: GridProps) {
   const {
     size,
     movies,
     folder,
+    labels,
     favourites,
+    showLabelsModal,
     addOrRemoveFavourite,
   } = props;
 
   return (
     <div id='container' className='row' data-size={size}>
-      {movies.map((movie, idx) => <GridItem favourite={favourites.includes(movie.title)} addOrRemoveFavourite={addOrRemoveFavourite} folder={folder} key={`movie${idx}`} movie={movie} />)}
+      {movies.map((movie, idx) => (
+        <GridItem
+          movie={movie}
+          labels={labels[movie.title]}
+          folder={folder} key={`movie${idx}`}
+          favourite={favourites.includes(movie.title)}
+          showLabelsModal={showLabelsModal}
+          addOrRemoveFavourite={addOrRemoveFavourite}
+        />))}
     </div>
   );
 }

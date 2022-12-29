@@ -1,18 +1,23 @@
+import Tooltip from '@mui/material/Tooltip';
 import './MovieCount.css';
 
-interface Props {
-  count: number,
+interface MovieCountProps {
+  count: number;
+  notAdded: string[];
 }
 
-function MovieCount(props: Props) {
+function MovieCount(props: MovieCountProps) {
   const {
     count,
+    notAdded,
   } = props;
 
   return (
-    <div id='movieCount'>
-      {count} movies found
-    </div>
+    <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{["Skipped: \n", ...notAdded].join("\n")}</div>}>
+      <div id='movieCount'>
+        {count} movies found
+      </div>
+    </Tooltip>
   );
 }
 
