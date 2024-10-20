@@ -15,8 +15,7 @@
     bottom: 3px;
     left: 5px;
     width: calc(100% - 10px);
-    font-family: Garamond;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
     text-align: center;
   }
@@ -52,4 +51,19 @@
 
   .tile button:hover {
     background: rgba(255, 255, 255, 0.8);
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .tile {
+      background: #0f131f;
+      box-shadow: 0 0 1px 2px #494D54;
+    }
+    .tile .title {
+      color: white;
+    }
+    .star,
+    .labels {
+      background: rgba(63, 65, 71, 0.8);
+      color: #BBADFD;
+    }
   }

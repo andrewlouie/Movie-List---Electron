@@ -8,10 +8,12 @@ import './App.css';
 
 import Grid from './Grid/Grid';
 import { SORT_ORDERS, Movie, Labels } from './types/types';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import MovieCount from './MovieCount/MovieCount';
 import CircularProgressWithLabel from './CircularProgressWithLabel/CircularProgressWithLabel';
 import LabelsModal from './LabelsModal/LabelsModal';
 import LabelSearch from './LabelSearch/LabelSearch';
+import { useDarkMode } from './useDarkMode';
 
 const fs = window.require('fs');
 const ipc = window.require('electron').ipcRenderer;
@@ -37,6 +39,8 @@ function App() {
 
   const [sortOrder, setSortOrder] = useState(SORT_ORDERS.DATE_DESC);
   const [size, setSize] = useState<number>(6);
+
+  const isDarkMode = useDarkMode();
 
   useEffect(() => {
     ipc.on('changeFolder', () => {
@@ -230,45 +234,54 @@ function App() {
     return labelsForMovie.some((v: string) => labelSearchValue.includes(v));
   });
 
+
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? 'dark' : 'light',
+    },
+  });
+
   return (
-    <div className='App' onKeyDown={handleKeyDown} role='menu' tabIndex={0}>
-      {isLoading && <div className="App__spinner"><CircularProgressWithLabel value={percent} /></div>}
-      {!isLoading && <>
-        <MovieCount count={movieCount} notAdded={notAdded} />
-        <div className="App__search">
-          <TextField
-            variant="standard"
-            label='Search'
-            sx={{ width: "250px" }}
-            type='search'
-            value={searchInput}
-            onChange={(evt) => setSearchInput(evt.target.value)} />
-          <LabelSearch
+    <ThemeProvider theme={theme}>
+      <div className='App' onKeyDown={handleKeyDown} role='menu' tabIndex={0}>
+        {isLoading && <div className="App__spinner"><CircularProgressWithLabel value={percent} /></div>}
+        {!isLoading && <>
+          <MovieCount count={movieCount} notAdded={notAdded} />
+          <div className="App__search">
+            <TextField
+              variant="standard"
+              label='Search'
+              sx={{ width: "250px" }}
+              type='search'
+              value={searchInput}
+              onChange={(evt) => setSearchInput(evt.target.value)} />
+            <LabelSearch
+              labels={labels}
+              labelSearchValue={labelSearchValue}
+              setLabelSearchValue={setLabelSearchValue}/>
+          </div>
+          <Grid
+            size={size}
             labels={labels}
-            labelSearchValue={labelSearchValue}
-            setLabelSearchValue={setLabelSearchValue}/>
-        </div>
-        <Grid
-          size={size}
+            folder={folder}
+            movies={sortedMovies}
+            favourites={favourites}
+            showLabelsModal={showLabelsModal}
+            addOrRemoveFavourite={addOrRemoveFavourite}
+            />
+        </>}
+        <LabelsModal
+          open={isModalOpen}
           labels={labels}
-          folder={folder}
-          movies={sortedMovies}
-          favourites={favourites}
-          showLabelsModal={showLabelsModal}
-          addOrRemoveFavourite={addOrRemoveFavourite}
-          />
-      </>}
-      <LabelsModal
-        open={isModalOpen}
-        labels={labels}
-        updateLabels={updateLabels}
-        handleClose={() => {
-          saveLabels();
-          setIsModalOpen(false);
-        }}
-        currentTitle={selectedMovie}
-      />
-    </div>
+          updateLabels={updateLabels}
+          handleClose={() => {
+            saveLabels();
+            setIsModalOpen(false);
+          }}
+          currentTitle={selectedMovie}
+        />
+      </div>
+    </ThemeProvider>
   );
 }
 

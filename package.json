@@ -1,6 +1,6 @@
 {
   "name": "moviez",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Movie application",
   "main": "main.js",
   "license": "MIT",
